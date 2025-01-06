@@ -1,15 +1,17 @@
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from openg2p_portal_api.controllers.program_controller import ProgramController
-from openg2p_portal_api.models.credentials import AuthCredentials
-from openg2p_portal_api.models.program import (
+from openg2p_beneficiary_portal_api.controllers.program_controller import (
+    ProgramController,
+)
+from openg2p_beneficiary_portal_api.models.credentials import AuthCredentials
+from openg2p_beneficiary_portal_api.models.program import (
     ApplicationDetails,
     BenefitDetails,
     Program,
     ProgramSummary,
 )
-from openg2p_portal_api.services.program_service import ProgramService
+from openg2p_beneficiary_portal_api.services.program_service import ProgramService
 
 TEST_DATA = {
     "PARTNER_ID": 1,

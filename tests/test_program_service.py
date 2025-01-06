@@ -2,11 +2,11 @@ from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
-from openg2p_portal_api.models.orm.program_orm import ProgramORM
-from openg2p_portal_api.models.orm.program_registrant_info_orm import (
+from openg2p_beneficiary_portal_api.models.orm.program_orm import ProgramORM
+from openg2p_beneficiary_portal_api.models.orm.program_registrant_info_orm import (
     ProgramRegistrantInfoORM,
 )
-from openg2p_portal_api.services.program_service import ProgramService
+from openg2p_beneficiary_portal_api.services.program_service import ProgramService
 
 TEST_DATA = {
     "PROGRAM": {

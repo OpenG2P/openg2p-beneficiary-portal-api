@@ -4,7 +4,7 @@ from openg2p_fastapi_common.models import BaseORMModel
 from sqlalchemy import JSON, Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from openg2p_portal_api.models.orm.document_file_orm import DocumentFileORM
+from .document_file_orm import DocumentFileORM
 
 
 class DocumentStoreORM(BaseORMModel):

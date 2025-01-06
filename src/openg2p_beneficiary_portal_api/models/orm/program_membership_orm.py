@@ -7,8 +7,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, and_, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from openg2p_portal_api.models.orm.document_file_orm import DocumentFileORM
-
+from .document_file_orm import DocumentFileORM
 from .program_registrant_info_orm import ProgramRegistrantInfoORM
 
 

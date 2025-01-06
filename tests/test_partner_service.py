@@ -2,9 +2,9 @@ from datetime import date
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from openg2p_beneficiary_portal_api.models.orm.partner_orm import PartnerORM
+from openg2p_beneficiary_portal_api.services.partner_service import PartnerService
 from openg2p_fastapi_common.errors.http_exceptions import InternalServerError
-from openg2p_portal_api.models.orm.partner_orm import PartnerORM
-from openg2p_portal_api.services.partner_service import PartnerService
 from sqlalchemy import Engine
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -58,7 +58,9 @@ def mock_session(mock_engine):
 
 @pytest.fixture
 def partner_service(mock_session, mock_engine):
-    with patch("openg2p_portal_api.services.partner_service.dbengine") as mock_dbengine:
+    with patch(
+        "openg2p_beneficiary_portal_api.services.partner_service.dbengine"
+    ) as mock_dbengine:
         mock_dbengine.get.return_value = mock_engine
         return PartnerService()
 
@@ -71,7 +73,7 @@ class TestPartnerService:
         expected_fields = ["name", "email", "phone", "gender", "birthdate"]
 
         with patch(
-            "openg2p_portal_api.models.orm.reg_id_orm.RegIDORM.get_partner_by_reg_id",
+            "openg2p_beneficiary_portal_api.models.orm.reg_id_orm.RegIDORM.get_partner_by_reg_id",
             new_callable=AsyncMock,
             return_value=None,
         ), patch.object(
@@ -80,7 +82,7 @@ class TestPartnerService:
             new_callable=AsyncMock,
             return_value=expected_fields,
         ), patch(
-            "openg2p_portal_api.services.partner_service.async_sessionmaker",
+            "openg2p_beneficiary_portal_api.services.partner_service.async_sessionmaker",
             return_value=lambda: mock_session[1],
         ):
             await partner_service.check_and_create_partner(
