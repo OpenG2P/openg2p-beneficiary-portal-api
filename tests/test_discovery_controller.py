@@ -2,9 +2,11 @@ from typing import List
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from openg2p_portal_api.controllers.discovery_controller import DiscoveryController
-from openg2p_portal_api.models.program import ProgramBase
-from openg2p_portal_api.services.program_service import ProgramService
+from openg2p_beneficiary_portal_api.controllers.discovery_controller import (
+    DiscoveryController,
+)
+from openg2p_beneficiary_portal_api.models.program import ProgramBase
+from openg2p_beneficiary_portal_api.services.program_service import ProgramService
 
 TEST_DATA = {
     "PROGRAM_NAME": "Test Program",
@@ -23,7 +25,7 @@ class TestDiscoveryController:
     @pytest.fixture
     def discovery_controller(self, mock_program_service):
         with patch(
-            "openg2p_portal_api.services.program_service.ProgramService.get_component",
+            "openg2p_beneficiary_portal_api.services.program_service.ProgramService.get_component",
             return_value=mock_program_service,
         ):
             controller = DiscoveryController()

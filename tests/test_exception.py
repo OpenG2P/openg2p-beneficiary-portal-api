@@ -1,6 +1,6 @@
 import pytest
+from openg2p_beneficiary_portal_api.exception import handle_exception
 from openg2p_fastapi_common.errors.http_exceptions import BadRequestError
-from openg2p_portal_api.exception import handle_exception
 
 
 class TestExceptionHandler:

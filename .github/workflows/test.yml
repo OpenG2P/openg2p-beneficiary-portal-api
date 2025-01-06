@@ -20,15 +20,6 @@ jobs:
           - "3.10"
         os:
           - ubuntu-latest
-    services:
-      postgres:
-        image: postgres:9.6
-        env:
-          POSTGRES_USER: openg2p
-          POSTGRES_PASSWORD: openg2p
-          POSTGRES_DB: openg2p
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v3
         with:
@@ -43,7 +34,7 @@ jobs:
           python -m pip install -e .
       - name: Run test suite
         run: |
-          pytest --cov-branch --cov-report=term-missing --cov=openg2p_portal_api --cov=tests
+          pytest --cov-branch --cov-report=term-missing --cov=openg2p_beneficiary_portal_api --cov=tests
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:

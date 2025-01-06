@@ -1,17 +1,19 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from openg2p_fastapi_auth.models.orm.login_provider import LoginProvider
-from openg2p_portal_api.controllers.auth_controller import AuthController
-from openg2p_portal_api.models.orm.auth_oauth_provider import AuthOauthProviderORM
-from openg2p_portal_api.models.orm.partner_orm import (
+from openg2p_beneficiary_portal_api.controllers.auth_controller import AuthController
+from openg2p_beneficiary_portal_api.models.orm.auth_oauth_provider import (
+    AuthOauthProviderORM,
+)
+from openg2p_beneficiary_portal_api.models.orm.partner_orm import (
     BankORM,
     PartnerBankORM,
     PartnerORM,
     PartnerPhoneNoORM,
 )
-from openg2p_portal_api.models.orm.reg_id_orm import RegIDORM, RegIDTypeORM
-from openg2p_portal_api.models.profile import UpdateProfile
+from openg2p_beneficiary_portal_api.models.orm.reg_id_orm import RegIDORM, RegIDTypeORM
+from openg2p_beneficiary_portal_api.models.profile import UpdateProfile
+from openg2p_fastapi_auth.models.orm.login_provider import LoginProvider
 from sqlalchemy.exc import IntegrityError
 
 TEST_CONSTANTS = {

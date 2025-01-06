@@ -12,10 +12,10 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from openg2p_portal_api.exception import handle_exception
-from openg2p_portal_api.models.document_file import DocumentFile
-from openg2p_portal_api.services.membership_service import MembershipService
-from openg2p_portal_api.utils.file_utils import (
+from ..exception import handle_exception
+from ..models.document_file import DocumentFile
+from ..models.orm.document_file_orm import DocumentFileORM
+from ..utils.file_utils import (
     compute_human_file_size,
     create_or_update_tag,
     extract_filename,
@@ -24,8 +24,7 @@ from openg2p_portal_api.utils.file_utils import (
     get_s3_backend_config,
     update_slug_relative_path,
 )
-
-from ..models.orm.document_file_orm import DocumentFileORM
+from .membership_service import MembershipService
 
 
 class DocumentFileService(BaseService):

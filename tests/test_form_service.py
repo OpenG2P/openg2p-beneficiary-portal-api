@@ -3,12 +3,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
-from openg2p_portal_api.models.form import ProgramForm
-from openg2p_portal_api.models.orm.program_orm import ProgramORM
-from openg2p_portal_api.models.orm.program_registrant_info_orm import (
+from openg2p_beneficiary_portal_api.models.form import ProgramForm
+from openg2p_beneficiary_portal_api.models.orm.program_orm import ProgramORM
+from openg2p_beneficiary_portal_api.models.orm.program_registrant_info_orm import (
     ProgramRegistrantInfoDraftORM,
 )
-from openg2p_portal_api.services.form_service import FormService
+from openg2p_beneficiary_portal_api.services.form_service import FormService
 
 TEST_DATA = {
     "PROGRAM_ID": 1,
