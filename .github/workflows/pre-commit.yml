@@ -3,6 +3,10 @@ name: pre-commit
 on:
   pull_request:
   push:
+    branches:
+      - "**"
+    tags-ignore:
+      - '**'
   workflow_dispatch:
 
 jobs:
