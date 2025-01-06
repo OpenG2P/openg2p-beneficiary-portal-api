@@ -7,11 +7,10 @@ from openg2p_fastapi_common.errors.http_exceptions import (
     UnauthorizedError,
 )
 
-from openg2p_portal_api.models.document_file import DocumentFile
-
 from ..config import Settings
 from ..dependencies import JwtBearerAuth
 from ..models.credentials import AuthCredentials
+from ..models.document_file import DocumentFile
 from ..services.document_file_service import DocumentFileService
 
 _config = Settings.get_config()

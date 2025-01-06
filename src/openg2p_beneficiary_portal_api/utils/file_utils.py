@@ -6,11 +6,11 @@ from openg2p_fastapi_common.errors.http_exceptions import BadRequestError
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
-from openg2p_portal_api.exception import handle_exception
-from openg2p_portal_api.models.orm.document_file_orm import DocumentFileORM
-from openg2p_portal_api.models.orm.document_store_orm import DocumentStoreORM
-from openg2p_portal_api.models.orm.document_tag_orm import DocumentTagORM
-from openg2p_portal_api.models.orm.program_orm import ProgramORM
+from ..exception import handle_exception
+from ..models.orm.document_file_orm import DocumentFileORM
+from ..models.orm.document_store_orm import DocumentStoreORM
+from ..models.orm.document_tag_orm import DocumentTagORM
+from ..models.orm.program_orm import ProgramORM
 
 # The methods below enable concurrent document uploads to Odoo and MinIO (S3-compatible).
 # - get_s3_backend_config

@@ -2,15 +2,15 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import UploadFile
+from openg2p_beneficiary_portal_api.controllers.document_file_controller import (
+    DocumentFileController,
+)
+from openg2p_beneficiary_portal_api.models.document_file import DocumentFile
 from openg2p_fastapi_auth.models.credentials import AuthCredentials
 from openg2p_fastapi_common.errors.http_exceptions import (
     BadRequestError,
     UnauthorizedError,
 )
-from openg2p_portal_api.controllers.document_file_controller import (
-    DocumentFileController,
-)
-from openg2p_portal_api.models.document_file import DocumentFile
 
 
 @pytest.fixture

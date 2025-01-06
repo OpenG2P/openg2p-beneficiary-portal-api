@@ -15,8 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from openg2p_portal_api.models.orm.document_file_orm import DocumentFileORM
-
+from .document_file_orm import DocumentFileORM
 from .reg_id_orm import RegIDORM
 
 
