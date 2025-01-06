@@ -4,10 +4,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 from fastapi import Request
+from openg2p_beneficiary_portal_api.controllers.oauth_controller import OAuthController
+from openg2p_beneficiary_portal_api.models.orm.auth_oauth_provider import (
+    AuthOauthProviderORM,
+)
 from openg2p_fastapi_auth.models.orm.login_provider import LoginProviderTypes
 from openg2p_fastapi_common.utils import cookie_utils
-from openg2p_portal_api.controllers.oauth_controller import OAuthController
-from openg2p_portal_api.models.orm.auth_oauth_provider import AuthOauthProviderORM
 
 TEST_CONSTANTS = {
     "CLIENT_ID": "test_client_id",

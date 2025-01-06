@@ -1,8 +1,10 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from openg2p_portal_api.models.orm.program_membership_orm import ProgramMembershipORM
-from openg2p_portal_api.services.membership_service import MembershipService
+from openg2p_beneficiary_portal_api.models.orm.program_membership_orm import (
+    ProgramMembershipORM,
+)
+from openg2p_beneficiary_portal_api.services.membership_service import MembershipService
 from sqlalchemy.exc import IntegrityError
 
 
@@ -19,7 +21,7 @@ def mock_session():
 def mock_session_maker(mock_session):
     session, async_session = mock_session
     with patch(
-        "openg2p_portal_api.services.membership_service.async_sessionmaker",
+        "openg2p_beneficiary_portal_api.services.membership_service.async_sessionmaker",
         return_value=lambda: async_session,
     ) as session_maker:
         yield session_maker
