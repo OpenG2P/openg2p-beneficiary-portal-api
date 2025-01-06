@@ -13,9 +13,9 @@ class Settings(AuthSettings, Settings):
         env_prefix="portal_", env_file=".env", extra="allow"
     )
 
-    openapi_title: str = "G2P Portal API"
+    openapi_title: str = "G2P Beneficiary Portal API"
     openapi_description: str = """
-    This module implements G2P Portal APIs.
+    This module implements G2P Beneficiary Portal APIs.
 
     ***********************************
     Further details goes here
