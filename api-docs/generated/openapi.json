@@ -2012,7 +2012,7 @@
             ],
             "title": "Has Applied"
           },
-          "self_service_portal_form": {
+          "portal_form_builder_id": {
             "anyOf": [
               {
                 "type": "integer"

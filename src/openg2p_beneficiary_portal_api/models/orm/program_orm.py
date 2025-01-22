@@ -42,9 +42,7 @@ class ProgramORM(BaseORMModelWithId):
         back_populates="program"
     )
 
-    self_service_portal_form: Mapped[int] = mapped_column(
-        ForeignKey("formio_builder.id")
-    )
+    portal_form_builder_id: Mapped[int] = mapped_column(ForeignKey("formio_builder.id"))
     form: Mapped[Optional[List["FormORM"]]] = relationship(back_populates="program")
     # cycles: Mapped[Optional[list["CycleORM"]]] = relationship(back_populates="program")
 

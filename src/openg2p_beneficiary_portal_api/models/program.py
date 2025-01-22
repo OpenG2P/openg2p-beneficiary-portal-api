@@ -25,7 +25,7 @@ class Program(ProgramBase):
 
     state: Optional[str] = None
     has_applied: Optional[bool] = None
-    self_service_portal_form: Optional[int] = Field(default=None, exclude=True)
+    portal_form_builder_id: Optional[int] = Field(default=None, exclude=True)
     is_portal_form_mapped: Optional[bool] = False
     is_multiple_form_submission: Optional[bool] = False
     last_application_status: Optional[str] = None
@@ -35,7 +35,7 @@ class Program(ProgramBase):
 
     @validator("is_portal_form_mapped", pre=True, always=True)
     def is_program_form_mapped(cls, v, values):
-        return bool(values.get("self_service_portal_form"))
+        return bool(values.get("portal_form_builder_id"))
 
 
 class ProgramSummary(BaseModel):
