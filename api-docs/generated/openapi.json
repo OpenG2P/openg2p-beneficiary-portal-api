@@ -2021,7 +2021,7 @@
                 "type": "null"
               }
             ],
-            "title": "Self Service Portal Form"
+            "title": "Portal Form Builder Id"
           },
           "is_portal_form_mapped": {
             "anyOf": [
