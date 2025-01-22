@@ -40,7 +40,7 @@ def program_mock():
     program.name = TEST_DATA["PROGRAM"]["NAME"]
     program.description = TEST_DATA["PROGRAM"]["DESC"]
     program.create_date = TEST_DATA["PROGRAM"]["CREATE_DATE"]
-    program.PORTAL_FORM_BUILDER_ID = TEST_DATA["PROGRAM"]["PORTAL_FORM_BUILDER_ID"]
+    program.portal_form_builder_id = TEST_DATA["PROGRAM"]["PORTAL_FORM_BUILDER_ID"]
     program.is_multiple_form_submission = TEST_DATA["PROGRAM"][
         "IS_MULTIPLE_FORM_SUBMISSION"
     ]
@@ -91,7 +91,7 @@ class TestProgramService:
             programs[0].create_date == TEST_DATA["PROGRAM"]["CREATE_DATE"]
         ), "Program create date does not match expected value"
         assert (
-            programs[0].PORTAL_FORM_BUILDER_ID
+            programs[0].portal_form_builder_id
             == TEST_DATA["PROGRAM"]["PORTAL_FORM_BUILDER_ID"]
         ), "Self service portal form flag does not match expected value"
         assert (
