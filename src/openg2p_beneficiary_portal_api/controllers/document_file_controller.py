@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Query, UploadFile
 from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.errors.http_exceptions import (
     BadRequestError,
@@ -47,7 +47,7 @@ class DocumentFileController(BaseController):
         self,
         programid: int,
         auth: Annotated[AuthCredentials, Depends(JwtBearerAuth())],
-        file_tag: str = None,
+        file_tags: list[str] = Query(None),
         file: UploadFile = File(...),
     ):
         if not auth.partner_id:
@@ -56,13 +56,18 @@ class DocumentFileController(BaseController):
             )
 
         try:
-            message = await self.file_service.upload_document(
+            response = await self.file_service.upload_document(
                 file=file,
                 programid=programid,
-                file_tag=file_tag,
+                file_tags=file_tags,
                 partner_id=auth.partner_id,
             )
-            return message
+
+            return {
+                "UploadStatus": response["S3_upload_status"],
+                "UploadedDocument": response["document"],
+            }
+
         except Exception:
             raise BadRequestError(message="File upload failed!") from None
 

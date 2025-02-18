@@ -11,10 +11,14 @@ from slugify import slugify as python_slugify
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.orm import selectinload
 
 from ..exception import handle_exception
 from ..models.document_file import DocumentFile
-from ..models.orm.document_file_orm import DocumentFileORM
+from ..models.orm.document_file_orm import (
+    DocumentFileORM,
+    g2p_document_tag_storage_file_rel,
+)
 from ..utils.file_utils import (
     compute_human_file_size,
     create_or_update_tag,
@@ -25,6 +29,19 @@ from ..utils.file_utils import (
     update_slug_relative_path,
 )
 from .membership_service import MembershipService
+
+FILE_TYPES = {
+    ".jpg": "image",
+    ".jpeg": "image",
+    ".png": "image",
+    ".gif": "image",
+    ".pdf": "pdf",
+    ".doc": "document",
+    ".docx": "document",
+    ".xls": "spreadsheet",
+    ".xlsx": "spreadsheet",
+    ".txt": "text",
+}
 
 
 class DocumentFileService(BaseService):
@@ -40,19 +57,21 @@ class DocumentFileService(BaseService):
         async with self.async_session_maker() as session:
             try:
                 result = await session.execute(
-                    select(DocumentFileORM).where(DocumentFileORM.id == document_id)
+                    select(DocumentFileORM)
+                    .where(DocumentFileORM.id == document_id)
+                    .options(selectinload(DocumentFileORM.tags_ids))
                 )
                 document = result.scalar_one_or_none()
 
                 if not document:
                     raise BadRequestError(message="Document not found") from None
 
-                return DocumentFile.from_orm(document)
+                return DocumentFile.model_validate(document)
             except SQLAlchemyError as e:
                 handle_exception(e, "Failed to retrieve document by ID")
 
     async def upload_document(
-        self, file, programid: int, file_tag: str, partner_id: int
+        self, file, programid: int, file_tags: list, partner_id: int
     ):
         """
         Uploads a document to MinIO or the local filesystem and saves its metadata in the database.
@@ -81,9 +100,6 @@ class DocumentFileService(BaseService):
                     raise BadRequestError(
                         message="Failed to upload document: Content must not be None."
                     ) from None
-                # Create or update document tag
-                if file_tag:
-                    await create_or_update_tag(self, file_tag)
 
                 # Get membership_id using programid and partner_id
                 program_membership_id = (
@@ -94,21 +110,39 @@ class DocumentFileService(BaseService):
 
                 # Compute file metadata
                 checksum = hashlib.sha1(data).hexdigest()
+                mimetype = mimetypes.guess_type(name)[0] or ""
+                extension = os.path.splitext(name)[1].lower()
+                file_type = FILE_TYPES.get(extension, "other")
                 new_file = DocumentFileORM(
                     name=name,
                     backend_id=backend_id,
                     file_size=len(data),
                     checksum=checksum,
                     filename=name,
-                    extension=os.path.splitext(name),
-                    mimetype=mimetypes.guess_type(name)[0] or "",
+                    extension=extension,
+                    mimetype=mimetype,
+                    file_type=file_type,
                     company_id=company_id,
                     active=True,
                     program_membership_id=program_membership_id,
                 )
                 extract_filename(new_file)
                 compute_human_file_size(new_file)
+
                 session.add(new_file)
+                await session.flush()
+                await session.refresh(new_file)
+
+                # Map document with their tags
+                tags_ids_object = await create_or_update_tag(self, file_tags)
+                for tag in tags_ids_object:
+                    await session.execute(
+                        g2p_document_tag_storage_file_rel.insert().values(
+                            storage_file_id=new_file.id, g2p_document_tag_id=tag.id
+                        )
+                    )
+                await session.flush()
+                await session.refresh(new_file)
                 await session.commit()
                 await session.refresh(new_file)
 
@@ -119,9 +153,16 @@ class DocumentFileService(BaseService):
 
                 # Update the database with the new slugified filename relative path
                 await update_slug_relative_path(self, file_id, final_filename)
-
                 # Upload the file to the backend storage
-                return await self.s3_storage_system(file, final_filename, backend)
+                S3_upload_status = await self.s3_storage_system(
+                    file, final_filename, backend
+                )
+
+                # Retrieve the document by its ID
+                new_document = await self.get_document_by_id(new_file.id)
+
+                # Return the status and document information
+                return {"S3_upload_status": S3_upload_status, "document": new_document}
 
         return {"message": "Backend type should be either amazon_s3 or filesystem."}
 
@@ -165,4 +206,4 @@ class DocumentFileService(BaseService):
             handle_exception(e, "Client error occurred")
         except Exception as e:
             handle_exception(e, f"Unexpected error while uploading file {file_name}")
-        return {"message": "File uploaded successfully."}
+        return "File uploaded successfully."

@@ -45,30 +45,35 @@ async def get_s3_backend_config(self, backend_id: int):
         return backend
 
 
-async def create_or_update_tag(self, tag_name: str):
-    """
-    Checks for an existing tag; updates it if found, or creates a new tag if not.
-    """
+async def create_or_update_tag(self, tag_list: list[str]) -> list[DocumentTagORM]:
+    tag_objects = []
+
     async with self.async_session_maker() as session:
         try:
-            result = await session.execute(
-                select(DocumentTagORM).where(DocumentTagORM.name == tag_name)
-            )
-            existing_tag = result.scalars().first()
+            for tag_name in tag_list:
+                if not tag_name:
+                    continue
 
-            if existing_tag:
-                existing_tag.name = tag_name
-                await session.commit()
-                await session.refresh(existing_tag)
-            else:
-                new_tag = DocumentTagORM(name=tag_name)
-                session.add(new_tag)
-                await session.commit()
-                await session.refresh(new_tag)
+                result = await session.execute(
+                    select(DocumentTagORM).where(DocumentTagORM.name == tag_name)
+                )
+                existing_tag = result.scalars().first()
+
+                if existing_tag:
+                    tag_objects.append(existing_tag)
+                else:
+                    new_tag = DocumentTagORM(name=tag_name)
+                    session.add(new_tag)
+                    await session.commit()
+                    await session.refresh(new_tag)
+                    tag_objects.append(new_tag)
+
+            return tag_objects
 
         except SQLAlchemyError as e:
             await session.rollback()
-            handle_exception(e, "Error creating or updating tag")
+            handle_exception(e, "Error creating or updating tags")
+            return []
 
 
 async def get_company_and_backend_id_by_programid(self, programid: int):
