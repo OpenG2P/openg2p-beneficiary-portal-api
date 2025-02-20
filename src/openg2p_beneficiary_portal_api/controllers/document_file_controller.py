@@ -47,7 +47,7 @@ class DocumentFileController(BaseController):
         self,
         programid: int,
         auth: Annotated[AuthCredentials, Depends(JwtBearerAuth())],
-        file_tags: list[str] = Query(None),
+        file_tags: list[str] = Query([]),
         file: UploadFile = File(...),
     ):
         if not auth.partner_id:

@@ -47,6 +47,9 @@ async def get_s3_backend_config(self, backend_id: int):
 
 async def create_or_update_tag(self, tag_list: list[str]) -> list[DocumentTagORM]:
     tag_objects = []
+    tag_list = tag_list or []
+    # Remove duplicates entries
+    tag_list = list(set(tag_list))
 
     async with self.async_session_maker() as session:
         try:
