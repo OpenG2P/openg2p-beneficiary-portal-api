@@ -1580,6 +1580,7 @@
           "address": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -1899,6 +1900,7 @@
                 "type": "string"
               },
               {
+                "additionalProperties": true,
                 "type": "object"
               }
             ],
@@ -2179,6 +2181,7 @@
           "submission_data": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2222,6 +2225,7 @@
           "program_registrant_info": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
