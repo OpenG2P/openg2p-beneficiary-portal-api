@@ -27,7 +27,7 @@ class ProgramService(BaseService):
                     "description": program.description,
                     "state": "Not Applied",
                     "has_applied": False,
-                    "self_service_portal_form": program.self_service_portal_form,
+                    "portal_form_builder_id": program.portal_form_builder_id,
                     "is_multiple_form_submission": program.is_multiple_form_submission,
                     "last_application_status": "Not submitted any application",
                     # "create date":program.create_date,
@@ -66,7 +66,7 @@ class ProgramService(BaseService):
                 "description": res.description,
                 "state": "Not Applied",
                 "has_applied": False,
-                "self_service_portal_form": res.self_service_portal_form,
+                "portal_form_builder_id": res.portal_form_builder_id,
                 "is_multiple_form_submission": res.is_multiple_form_submission,
                 "last_application_status": "Not submitted any application",
             }
@@ -106,7 +106,7 @@ class ProgramService(BaseService):
                     "id": program.id,
                     "name": program.name,
                     "description": program.description,
-                    "self_service_portal_form": program.self_service_portal_form,
+                    "portal_form_builder_id": program.portal_form_builder_id,
                     "is_multiple_form_submission": program.is_multiple_form_submission,
                 }
 
