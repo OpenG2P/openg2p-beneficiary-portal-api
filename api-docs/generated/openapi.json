@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "G2P Beneficiary Portal API",
-    "description": "\n    This module implements G2P Beneficiary Portal APIs.\n\n    ***********************************\n    Further details goes here\n    ***********************************\n    ",
+    "title": "G2P Portal API",
+    "description": "\n    This module implements G2P Portal APIs.\n\n    ***********************************\n    Further details goes here\n    ***********************************\n    ",
     "contact": {
       "url": "https://www.openg2p.org/",
       "email": "info@openg2p.org"
@@ -11,7 +11,7 @@
       "name": "Mozilla Public License 2.0",
       "url": "https://www.mozilla.org/en-US/MPL/2.0/"
     },
-    "version": "0.0.0"
+    "version": "0.1.0"
   },
   "paths": {
     "/discovery": {
