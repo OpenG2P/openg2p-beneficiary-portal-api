@@ -20,6 +20,7 @@ jobs:
       - name: Docker build
         run: |
           BRANCH_NAME=$(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
+          BRANCH_NAME=${BRANCH_NAME#v}
 
           IMAGE_ID=$NAMESPACE/$SERVICE_NAME
 
@@ -34,9 +35,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID >> $GITHUB_ENV
           echo VERSION=$VERSION >> $GITHUB_ENV
 
-          docker build . \
-            --file Dockerfile \
-            --tag $IMAGE_ID:$VERSION
+          docker build . -t $IMAGE_ID:$VERSION
           if [[ '${{ secrets.docker_hub_token }}' != '' && '${{ secrets.docker_hub_actor }}' != '' ]]; then
             export DOCKER_PUSH="true"
             echo DOCKER_PUSH=$DOCKER_PUSH >> $GITHUB_ENV
