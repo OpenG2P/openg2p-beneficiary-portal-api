@@ -1,6 +1,4 @@
 import json
-import mimetypes
-import os
 
 from openg2p_fastapi_common.errors.http_exceptions import BadRequestError
 from sqlalchemy import select
@@ -143,12 +141,3 @@ def human_size(size: int) -> str:
             return f"{size:.2f} {unit}"
         size /= 1024
     return f"{size:.2f} TB"
-
-
-def extract_filename(document_file: DocumentFileORM):
-    """Extract filename and extension from name."""
-    if document_file.name:
-        document_file.filename, document_file.extension = os.path.splitext(
-            document_file.name
-        )
-        document_file.mimetype = mimetypes.guess_type(document_file.name)[0] or ""

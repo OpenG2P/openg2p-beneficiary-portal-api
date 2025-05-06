@@ -1,13 +1,13 @@
 import hashlib
 import mimetypes
 import os
+import uuid
 
 import boto3
 from botocore.exceptions import ClientError
 from openg2p_fastapi_common.context import dbengine
 from openg2p_fastapi_common.errors.http_exceptions import BadRequestError
 from openg2p_fastapi_common.service import BaseService
-from slugify import slugify as python_slugify
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -22,7 +22,6 @@ from ..models.orm.document_file_orm import (
 from ..utils.file_utils import (
     compute_human_file_size,
     create_or_update_tag,
-    extract_filename,
     get_company_and_backend_id_by_programid,
     get_file_id_by_slug,
     get_s3_backend_config,
@@ -94,7 +93,7 @@ class DocumentFileService(BaseService):
                 }
 
             if backend_type == "amazon_s3":
-                name = file.filename
+                unique_filename = str(uuid.uuid4())
                 data = await file.read()
                 if data is None:
                     raise BadRequestError(
@@ -107,18 +106,18 @@ class DocumentFileService(BaseService):
                         programid=programid, partnerid=partner_id
                     )
                 )
-
                 # Compute file metadata
+                name = file.filename
                 checksum = hashlib.sha1(data).hexdigest()
                 mimetype = mimetypes.guess_type(name)[0] or ""
                 extension = os.path.splitext(name)[1].lower()
                 file_type = FILE_TYPES.get(extension, "other")
                 new_file = DocumentFileORM(
-                    name=name,
+                    name=unique_filename,
                     backend_id=backend_id,
                     file_size=len(data),
                     checksum=checksum,
-                    filename=name,
+                    filename=unique_filename,
                     extension=extension,
                     mimetype=mimetype,
                     file_type=file_type,
@@ -126,7 +125,7 @@ class DocumentFileService(BaseService):
                     active=True,
                     program_membership_id=program_membership_id,
                 )
-                extract_filename(new_file)
+
                 compute_human_file_size(new_file)
 
                 session.add(new_file)
@@ -146,10 +145,9 @@ class DocumentFileService(BaseService):
                 await session.commit()
                 await session.refresh(new_file)
 
-                # Generate slugified filename
-                slugified_filename = python_slugify(name)
+                # Create unique slug with UUID and ID
                 file_id = await get_file_id_by_slug(self)
-                final_filename = f"{slugified_filename}-{file_id}"
+                final_filename = f"{unique_filename}-{file_id}"
 
                 # Update the database with the new slugified filename relative path
                 await update_slug_relative_path(self, file_id, final_filename)
