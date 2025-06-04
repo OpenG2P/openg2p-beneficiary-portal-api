@@ -1,23 +1,23 @@
 from typing import Annotated
 
 from fastapi import Depends
-from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.errors.http_exceptions import (
     BadRequestError,
     UnauthorizedError,
 )
+from openg2p_portal_api_common.controllers.form_controller import FormController
+from openg2p_portal_api_common.models.credentials import AuthCredentials
 
 from ..config import Settings
 from ..dependencies import JwtBearerAuth
-from ..models.credentials import AuthCredentials
 from ..models.form import ProgramForm, ProgramRegistrantInfo
-from ..services.form_service import FormService
+from ..services.form_service import BeneficiaryFormService
 from ..services.program_service import ProgramService
 
 _config = Settings.get_config()
 
 
-class FormController(BaseController):
+class BeneficiaryFormController(FormController):
     """
     FormController handles operations related to form management for programs.
     """
@@ -27,7 +27,7 @@ class FormController(BaseController):
         Initializes the FormController with necessary components and configurations.
         """
         super().__init__(**kwargs)
-        self._form_service = FormService.get_component()
+        self._form_service = BeneficiaryFormService.get_component()
         self._program_service = ProgramService.get_component()
 
         self.router.prefix += "/form"
@@ -60,7 +60,7 @@ class FormController(BaseController):
         Provides access to the form service component.
         """
         if not self._form_service:
-            self._form_service = FormService.get_component()
+            self._form_service = BeneficiaryFormService.get_component()
         return self._form_service
 
     @property

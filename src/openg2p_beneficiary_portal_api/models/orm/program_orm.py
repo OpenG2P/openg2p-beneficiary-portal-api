@@ -20,7 +20,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 from .cycle_membership_orm import CycleMembershipORM
 from .cycle_orm import CycleORM
 from .entitlement_orm import EntitlementORM
-from .formio_builder_orm import FormORM
+from .formio_builder_orm import BeneficiaryFormORM
 from .payment_orm import PaymentORM
 from .program_membership_orm import ProgramMembershipORM
 from .program_registrant_info_orm import ProgramRegistrantInfoORM
@@ -43,7 +43,9 @@ class ProgramORM(BaseORMModelWithId):
     )
 
     portal_form_builder_id: Mapped[int] = mapped_column(ForeignKey("formio_builder.id"))
-    form: Mapped[Optional[List["FormORM"]]] = relationship(back_populates="program")
+    form: Mapped[Optional[List["BeneficiaryFormORM"]]] = relationship(
+        back_populates="program"
+    )
     # cycles: Mapped[Optional[list["CycleORM"]]] = relationship(back_populates="program")
 
     @classmethod

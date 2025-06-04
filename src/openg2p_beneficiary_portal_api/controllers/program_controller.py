@@ -4,10 +4,10 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 from openg2p_fastapi_common.controller import BaseController
 from openg2p_fastapi_common.errors.http_exceptions import UnauthorizedError
+from openg2p_portal_api_common.models.credentials import AuthCredentials
 
 from ..config import Settings
 from ..dependencies import JwtBearerAuth
-from ..models.credentials import AuthCredentials
 from ..models.program import ApplicationDetails, BenefitDetails, Program, ProgramSummary
 from ..services.program_service import ProgramService
 
