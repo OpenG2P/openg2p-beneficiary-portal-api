@@ -2,8 +2,6 @@ from openg2p_portal_api_common.models.orm.document_file_orm import DocumentFileO
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .partner_orm import BeneficiaryPartnerORM
-
 
 class BeneficiaryDocumentFileORM(DocumentFileORM):
     __tablename__ = DocumentFileORM.__tablename__
@@ -15,12 +13,4 @@ class BeneficiaryDocumentFileORM(DocumentFileORM):
 
     program_membership = relationship(
         "ProgramMembershipORM", back_populates="document_files"
-    )
-
-    registrant_id: Mapped[int] = mapped_column(ForeignKey("res_partner.id"))
-
-    registrant = relationship(
-        BeneficiaryPartnerORM,
-        foreign_keys=[registrant_id],
-        back_populates="supporting_documents_ids",
     )
