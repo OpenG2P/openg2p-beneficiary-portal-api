@@ -798,12 +798,16 @@
             }
           },
           {
-            "name": "file_tag",
+            "name": "file_tags",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "title": "File Tag"
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": [],
+              "title": "File Tags"
             }
           }
         ],
@@ -1672,16 +1676,189 @@
       },
       "DocumentFile": {
         "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
           "name": {
             "type": "string",
             "title": "Name"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "relative_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Path"
+          },
+          "file_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size"
+          },
+          "human_file_size": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Human File Size"
+          },
+          "checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checksum"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "extension": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extension"
+          },
+          "mimetype": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mimetype"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          },
+          "file_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Type"
+          },
+          "backend_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backend Id"
+          },
+          "company_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Id"
+          },
+          "program_membership_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program Membership Id"
+          },
+          "tags_ids": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentTag"
+            },
+            "type": "array",
+            "title": "Tags Ids",
+            "default": []
           }
         },
         "type": "object",
         "required": [
+          "id",
           "name"
         ],
         "title": "DocumentFile"
+      },
+      "DocumentTag": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "DocumentTag"
       },
       "ErrorListResponse": {
         "properties": {
@@ -2013,17 +2190,6 @@
               }
             ],
             "title": "Has Applied"
-          },
-          "portal_form_builder_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Portal Form Builder Id"
           },
           "is_portal_form_mapped": {
             "anyOf": [
