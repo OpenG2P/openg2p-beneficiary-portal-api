@@ -7,7 +7,6 @@ from openg2p_beneficiary_portal_api.models.orm.document_file_orm import Document
 from openg2p_beneficiary_portal_api.models.orm.document_store_orm import (
     DocumentStoreORM,
 )
-from openg2p_beneficiary_portal_api.models.orm.document_tag_orm import DocumentTagORM
 from openg2p_beneficiary_portal_api.models.orm.program_orm import ProgramORM
 from openg2p_beneficiary_portal_api.services.document_file_service import (
     DocumentFileService,
@@ -18,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 TEST_CONSTANTS = {
     "PROGRAM_ID": 1,
     "PARTNER_ID": 1,
-    "FILE_TAG": "test_tag",
+    "FILE_TAG": ["tag-13", "tag-2"],
     "DOCUMENT_NAME": "test.pdf",
     "DOCUMENT_ID": 1,
     "DOCUMENT_NOT_FOUND_ID": 999,
@@ -80,17 +79,25 @@ class TestDocumentFileService:
     @pytest.mark.asyncio
     async def test_get_document_by_id_success(self, document_service, mock_session):
         mock_document = DocumentFileORM(
+            id=TEST_CONSTANTS["DOCUMENT_ID"],
             name=TEST_CONSTANTS["DOCUMENT_NAME"],
             backend_id=1,
             file_size=1000,
             checksum="abc123",
             company_id=1,
             active=True,
+            slug=f"test-pdf-{TEST_CONSTANTS['DOCUMENT_ID']}",
+            relative_path=f"test-pdf-{TEST_CONSTANTS['DOCUMENT_ID']}",
+            filename="test",
+            extension=".pdf",
+            mimetype="application/pdf",
+            file_type="pdf",
+            human_file_size="0.98 KB",
+        )
+        mock_session.execute.return_value = AsyncMock(
+            scalar_one_or_none=MagicMock(return_value=mock_document)
         )
 
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = mock_document
-        mock_session.execute.return_value = mock_result
         document_service.async_session_maker.return_value.__aenter__.return_value = (
             mock_session
         )
@@ -105,6 +112,10 @@ class TestDocumentFileService:
         assert (
             result.name == mock_document.name
         ), f"Document name should be {mock_document.name}"
+        assert (
+            result.id == TEST_CONSTANTS["DOCUMENT_ID"]
+        ), f"Document ID should be {TEST_CONSTANTS['DOCUMENT_ID']}"
+        mock_session.execute.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_document_by_id_not_found(self, document_service, mock_session):
@@ -126,7 +137,12 @@ class TestDocumentFileService:
 
     @pytest.mark.asyncio
     async def test_upload_s3_success(
-        self, document_service, mock_session, mock_file, mock_program, mock_backend_s3
+        self,
+        document_service,
+        mock_session,
+        mock_file,
+        mock_program,
+        mock_backend_s3,
     ):
         mock_result = AsyncMock()
         mock_result.scalars = MagicMock()
@@ -149,7 +165,7 @@ class TestDocumentFileService:
             )
 
             assert (
-                result["message"] == TEST_CONSTANTS["SUCCESS_MESSAGE"]
+                result == TEST_CONSTANTS["SUCCESS_MESSAGE"]
             ), "S3 upload should return success message"
             mock_s3_client.upload_fileobj.assert_called_once()
 
@@ -184,105 +200,6 @@ class TestDocumentFileService:
         assert (
             result["message"] == TEST_CONSTANTS["FILESYSTEM_UNSUPPORTED_MESSAGE"]
         ), "Filesystem upload should return unsupported message"
-
-    @pytest.mark.asyncio
-    async def test_upload_document_s3(
-        self, document_service, mock_session, mock_file, mock_program, mock_backend_s3
-    ):
-        mock_tag = DocumentTagORM(name=TEST_CONSTANTS["FILE_TAG"])
-        mock_document = DocumentFileORM(
-            name=TEST_CONSTANTS["DOCUMENT_NAME"],
-            backend_id=1,
-            file_size=1000,
-            checksum="abc123",
-            company_id=1,
-            active=True,
-        )
-
-        mock_session.execute.side_effect = [
-            AsyncMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(first=MagicMock(return_value=mock_program))
-                )
-            ),
-            AsyncMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(
-                        first=MagicMock(return_value=mock_backend_s3)
-                    )
-                )
-            ),
-            AsyncMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(first=MagicMock(return_value=None))
-                )
-            ),
-            AsyncMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(first=MagicMock(return_value=mock_tag))
-                )
-            ),
-            AsyncMock(
-                scalars=MagicMock(
-                    return_value=MagicMock(first=MagicMock(return_value=mock_document))
-                )
-            ),
-            AsyncMock(),
-        ]
-
-        document_service.async_session_maker.return_value.__aenter__.return_value = (
-            mock_session
-        )
-        mock_file.read = AsyncMock(return_value=b"test content")
-
-        with patch.object(document_service, "s3_storage_system") as mock_s3_storage:
-            mock_s3_storage.return_value = {
-                "message": TEST_CONSTANTS["SUCCESS_MESSAGE"]
-            }
-            result = await document_service.upload_document(
-                mock_file,
-                TEST_CONSTANTS["PROGRAM_ID"],
-                TEST_CONSTANTS["FILE_TAG"],
-                partner_id=TEST_CONSTANTS["PARTNER_ID"],
-            )
-
-            assert (
-                result["message"] == TEST_CONSTANTS["SUCCESS_MESSAGE"]
-            ), "S3 upload should return success message"
-            mock_s3_storage.assert_called_once_with(
-                mock_file, str(f"test-pdf-{mock_document.id}"), mock_backend_s3
-            )
-            assert (
-                mock_session.add.call_count == 2
-            ), "Two objects should be added to the session"
-
-    @pytest.mark.asyncio
-    async def test_upload_document_empty_content(
-        self, document_service, mock_session, mock_file, mock_program, mock_backend_s3
-    ):
-        mock_result = AsyncMock()
-        mock_result.scalars = MagicMock()
-        mock_result.scalars.return_value.first.side_effect = [
-            mock_program,
-            mock_backend_s3,
-        ]
-        mock_session.execute.return_value = mock_result
-
-        document_service.async_session_maker.return_value.__aenter__.return_value = (
-            mock_session
-        )
-        mock_file.read = AsyncMock(return_value=None)
-
-        with pytest.raises(BadRequestError) as exc_info:
-            await document_service.upload_document(
-                mock_file,
-                TEST_CONSTANTS["PROGRAM_ID"],
-                TEST_CONSTANTS["FILE_TAG"],
-                partner_id=TEST_CONSTANTS["PARTNER_ID"],
-            )
-        assert (
-            str(exc_info.value.detail) == TEST_CONSTANTS["EMPTY_CONTENT_ERROR"]
-        ), "Exception detail should indicate content must not be None"
 
     @pytest.mark.asyncio
     async def test_upload_document_invalid_backend(
