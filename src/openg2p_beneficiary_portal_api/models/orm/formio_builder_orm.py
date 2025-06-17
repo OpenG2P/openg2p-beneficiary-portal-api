@@ -1,11 +1,9 @@
-from openg2p_fastapi_common.models import BaseORMModel
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from openg2p_portal_api_common.models.orm.formio_builder_orm import FormORM
+from sqlalchemy.orm import relationship
 
 
-class FormORM(BaseORMModel):
-    __tablename__ = "formio_builder"
+class BeneficiaryFormORM(FormORM):
+    __tablename__ = FormORM.__tablename__
+    __table_args__ = {"extend_existing": True}
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    schema: Mapped[str] = mapped_column(String())
     program = relationship("ProgramORM", back_populates="form")

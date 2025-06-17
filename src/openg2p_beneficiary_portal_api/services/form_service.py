@@ -3,7 +3,8 @@ from datetime import datetime
 
 from fastapi import HTTPException, status
 from openg2p_fastapi_common.context import dbengine
-from openg2p_fastapi_common.service import BaseService
+from openg2p_portal_api_common.services.form_service import FormService
+from openg2p_portal_api_common.services.partner_service import PartnerService
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -15,10 +16,9 @@ from ..models.orm.program_registrant_info_orm import (
     ProgramRegistrantInfoORM,
 )
 from .membership_service import MembershipService
-from .partner_service import PartnerService
 
 
-class FormService(BaseService):
+class BeneficiaryFormService(FormService):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.membership_service = MembershipService.get_component()
@@ -55,7 +55,6 @@ class FormService(BaseService):
                 response_dict.update(
                     {"submission_data": draft_submission_data.program_registrant_info}
                 )
-
             return ProgramForm(**response_dict)
         else:
             raise HTTPException(
