@@ -7,7 +7,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, and_, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .document_file_orm import DocumentFileORM
+from .document_file_orm import BeneficiaryDocumentFileORM
 from .program_registrant_info_orm import ProgramRegistrantInfoORM
 
 
@@ -24,7 +24,7 @@ class ProgramMembershipORM(BaseORMModel):
     program_reg_info: Mapped[Optional[List["ProgramRegistrantInfoORM"]]] = relationship(
         back_populates="membership"
     )
-    document_files: Mapped[Optional[List["DocumentFileORM"]]] = relationship(
+    document_files: Mapped[Optional[List["BeneficiaryDocumentFileORM"]]] = relationship(
         back_populates="program_membership"
     )
 

@@ -1,47 +1,16 @@
-from openg2p_fastapi_common.models import BaseORMModel
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
+from openg2p_portal_api_common.models.orm.document_file_orm import DocumentFileORM
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# Define association table for many-to-many relationship
-g2p_document_tag_storage_file_rel = Table(
-    "g2p_document_tag_storage_file_rel",
-    BaseORMModel.metadata,
-    Column("storage_file_id", ForeignKey("storage_file.id"), primary_key=True),
-    Column("g2p_document_tag_id", ForeignKey("g2p_document_tag.id"), primary_key=True),
-)
 
+class BeneficiaryDocumentFileORM(DocumentFileORM):
+    __tablename__ = DocumentFileORM.__tablename__
+    __table_args__ = {"extend_existing": True}
 
-class DocumentFileORM(BaseORMModel):
-    __tablename__ = "storage_file"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    slug: Mapped[str] = mapped_column(String, nullable=True, index=True)
-    relative_path: Mapped[str] = mapped_column(String, nullable=True)
-    file_size: Mapped[int] = mapped_column(Integer, nullable=True)
-    human_file_size: Mapped[str] = mapped_column(String, nullable=True)
-    checksum: Mapped[str] = mapped_column(String(40), nullable=True, index=True)
-    filename: Mapped[str] = mapped_column(String, nullable=True)
-    extension: Mapped[str] = mapped_column(String, nullable=True)
-    mimetype: Mapped[str] = mapped_column(String, nullable=True)
-    to_delete: Mapped[bool] = mapped_column(Boolean, default=False)
-    active: Mapped[bool] = mapped_column(Boolean, default=True)
-    file_type: Mapped[str] = mapped_column(String, nullable=True)
-
-    backend_id: Mapped[int] = mapped_column(
-        ForeignKey("storage_backend.id"), nullable=False, index=True
-    )
-    company_id: Mapped[int] = mapped_column(ForeignKey("res_partner.id"), nullable=True)
     program_membership_id: Mapped[int] = mapped_column(
         ForeignKey("g2p_program_membership.id"), nullable=True
     )
-    backend = relationship("DocumentStoreORM", back_populates="documents")
-    partner = relationship("PartnerORM", back_populates="documents")
+
     program_membership = relationship(
         "ProgramMembershipORM", back_populates="document_files"
-    )
-    tags_ids = relationship(
-        "DocumentTagORM",
-        secondary=g2p_document_tag_storage_file_rel,
-        back_populates="documents",
     )

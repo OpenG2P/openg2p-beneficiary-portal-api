@@ -1,49 +1,36 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Query, UploadFile
-from openg2p_fastapi_common.controller import BaseController
+from fastapi import Depends, File, Query, UploadFile
 from openg2p_fastapi_common.errors.http_exceptions import (
     BadRequestError,
     UnauthorizedError,
 )
+from openg2p_portal_api_common.controllers.document_file_controller import (
+    DocumentFileController,
+)
+from openg2p_portal_api_common.models.credentials import AuthCredentials
+from openg2p_portal_api_common.models.document_file import DocumentFile
 
 from ..config import Settings
 from ..dependencies import JwtBearerAuth
-from ..models.credentials import AuthCredentials
-from ..models.document_file import DocumentFile
-from ..services.document_file_service import DocumentFileService
+from ..services.document_file_service import BeneficiaryDocumentFileService
 
 _config = Settings.get_config()
 
 
-class DocumentFileController(BaseController):
+class BeneficiaryDocumentFileController(DocumentFileController):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._file_service = DocumentFileService.get_component()
+        self._file_service = BeneficiaryDocumentFileService.get_component()
 
-        self.router = APIRouter()
-        self.router.tags += ["document"]
         self.router.add_api_route(
-            "/uploadDocument/{programid}",
-            self.upload_document,
+            "/uploadBeneficiaryDocument",
+            self.upload_beneficiary_document,
             responses={200: {"model": DocumentFile}},
             methods=["POST"],
         )
 
-        self.router.add_api_route(
-            "/getDocument/{document_id}",
-            self.get_document_by_id,
-            responses={200: {"model": DocumentFile}},
-            methods=["GET"],
-        )
-
-    @property
-    def file_service(self):
-        if not self._file_service:
-            self._file_service = DocumentFileService.get_component()
-        return self._file_service
-
-    async def upload_document(
+    async def upload_beneficiary_document(
         self,
         programid: int,
         auth: Annotated[AuthCredentials, Depends(JwtBearerAuth())],
@@ -54,35 +41,13 @@ class DocumentFileController(BaseController):
             raise UnauthorizedError(
                 message="Unauthorized. Partner Not Found in Registry."
             )
-
         try:
-            response = await self.file_service.upload_document(
+            message = await self._file_service.upload_beneficiary_document(
                 file=file,
-                programid=programid,
                 file_tags=file_tags,
+                programid=programid,
                 partner_id=auth.partner_id,
             )
-
-            return {
-                "UploadStatus": response["S3_upload_status"],
-                "UploadedDocument": response["document"],
-            }
-
+            return message
         except Exception:
             raise BadRequestError(message="File upload failed!") from None
-
-    async def get_document_by_id(
-        self,
-        document_id: int,
-        auth: Annotated[AuthCredentials, Depends(JwtBearerAuth())],
-    ):
-        if not auth.partner_id:
-            raise UnauthorizedError(
-                message="Unauthorized. Partner Not Found in Registry."
-            )
-
-        try:
-            document = await self.file_service.get_document_by_id(document_id)
-            return document
-        except Exception:
-            raise BadRequestError(message="Failed to retrieve document by ID") from None

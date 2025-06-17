@@ -10,10 +10,11 @@ from openg2p_fastapi_common.errors.http_exceptions import (
     InternalServerError,
     UnauthorizedError,
 )
-
-from .models.credentials import AuthCredentials
-from .models.orm.auth_oauth_provider import AuthOauthProviderORM
-from .models.orm.reg_id_orm import RegIDORM
+from openg2p_portal_api_common.models.credentials import AuthCredentials
+from openg2p_portal_api_common.models.orm.auth_oauth_provider import (
+    AuthOauthProviderORM,
+)
+from openg2p_portal_api_common.models.orm.reg_id_orm import RegIDORM
 
 
 class JwtBearerAuth(JwtBearerAuth):
